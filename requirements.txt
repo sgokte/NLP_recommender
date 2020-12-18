@@ -1,0 +1,7 @@
+requests==2.21.0
+spacy==2.3.5
+streamlit==0.72.0
+gensim==3.8.3
+pandas==0.24.2
+nltk==3.4
+numpy==1.19.4

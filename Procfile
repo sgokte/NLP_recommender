@@ -1,0 +1,1 @@
+web: sh setup.sh && streamlit run Tourist_Recommendation_Pipeline#V.02.py
