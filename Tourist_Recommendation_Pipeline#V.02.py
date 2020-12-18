@@ -30,7 +30,7 @@ warnings.filterwarnings("ignore",category=DeprecationWarning)
 # In[2]:
 
 
-metadata = pd.read_csv("metadata_final.csv", encoding='latin-1')
+metadata = pd.read_csv(r"C:\Users\User\Downloads\Capstone files\Capstone_2\metadata_final.csv", encoding='latin-1')
 metadata.head()
 
 
@@ -40,7 +40,7 @@ metadata.head()
 
 
 # Load Doc2Vec Model
-model_d2v = Doc2Vec.load('optimal_d2v_model.doc2vec')
+model_d2v = Doc2Vec.load(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_d2v_model.doc2vec')
 
 
 # In[6]:
@@ -61,15 +61,15 @@ class TaggedDocumentIterator(object):
 
 
 # Load Vectorizer
-with open('tagged_doc_corpus.pkl', 'rb') as f:
+with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\tagged_doc_corpus.pkl', 'rb') as f:
   tagged_doc_corpus = pickle.load(f)
 
 # Load LDA Model
-with open('optimal_LDA_Model.pkl', 'rb') as f:
+with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_LDA_Model.pkl', 'rb') as f:
   lda_model = pickle.load(f)
 
 # Load Vectorizer
-with open('optimal_vectorizer.pkl', 'rb') as f:
+with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_vectorizer.pkl', 'rb') as f:
   vectorizer = pickle.load(f)
 
 
@@ -124,6 +124,9 @@ def bigram_trigrams(texts):
     return [trigram_mod[bigram_mod[doc]] for doc in texts]
 
 
+# In[42]:
+
+
 def lemmatization(text, lemmer = WordNetLemmatizer()):
     '''
     Removes stopwords and does lemmatization
@@ -146,9 +149,9 @@ def lemmatization(text, lemmer = WordNetLemmatizer()):
 
 
 # Define function to predict topic for a given text document.
-nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+#nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
-def preprocess_description(text, nlp=nlp):
+def preprocess_description(text):
     global sent_to_words
     global lemmatization
 
@@ -219,26 +222,43 @@ def predict_topic(vectorizer, lda_model, clean_text):
 
 # # **Topic Inference and Recommendation Section**
 
+# In[50]:
+
 
 input_location = 'Cherai Beach'
+# input_text = '''Cherai Beach is a beach located in Cherai in the northern side of Vypin Island, a suburb of the city Kochi in the state of Kerala, India. One of the most visited beaches in the state, it is situated at around 25 km (15 mi) from downtown Kochi and 20 km (12 mi) from Cochin International Airport.
+
+# The beach is around 10 km long and is ideal for swimming as the tide is mostly low and the waves are gentle. It is known for frequent dolphin sightings. It is one of the few places where the backwaters and the sea can be seen in a single frame.[2] Cherai Beach offers the less busier and cleaner option accessible to Kochi and always attract the tourists from around and other states as well.'''
 
 
-def get_recommendation(input_text,input_location,vectorizer,lda_model,doc2vec_model, n_recommend):
+# input_text = '''Anamudi is a mountain located in the Indian state of Kerala. It is the highest peak in the Western Ghats and South India, at an elevation of 2,695 metres (8,842 ft)[1][2] and a topographic prominence of 2,479 metres (8,133 ft).[3] It lies on the border of Devikulam Taluk, Idukki district and Kothamangalam Taluk, Ernakulam district.[5] The name Anamudi literally translates to "elephant's head" a reference to the resemblance of the mountain to an elephant's head.[6] Anamudi Shola National Park (ASNP) was declared as National Park in December 2003 as per Notification No. 12876/F2 2003/F & WLD dated 14.12.2003 of Government of Kerala
+
+# The first recorded ascent of Anamudi was by General Douglas Hamilton of the Madras Army on 4 May 1862,[citation needed] but it is likely that there had been earlier ascents by local people.
+
+# Anamudi peak is one of only three ultra prominent peaks in South India. It is also the peak with the greatest topographic isolation within India.[7]It is the highest point in India south of Himalayas. Thus it is known as "Everest of South India'''
+
+# input_location = 'Bhitarkanika Mangroves'
+
+
+# In[139]:
+
+
+def get_recommendation(input_text,vectorizer,lda_model,doc2vec_model):
   clean_text = preprocess_description(input_text)
   sim_score = []
   # For tourist locations topic inference
   predicted_topic, topic_words, prob_score = predict_topic(vectorizer,lda_model,clean_text)
-  
+
   # For tourist locations recommendation
   sample_df = metadata.loc[metadata['dominant_topic'] == predicted_topic].reset_index(drop=True)
-  sentences = TaggedDocument(words = clean_text[0].split(), tags = [input_location])
+  sentences = TaggedDocument(words = clean_text[0].split(), tags = ['new_location'])
   doc_tags = metadata['Place Name'].values.tolist()
   for loc in sample_df['Place Name']:
-    idx = doc_tags.index(loc)
-    score = doc2vec_model.docvecs.similarity_unseen_docs(doc2vec_model,sentences.words,list(tagged_doc_corpus)[idx].words)
-    sim_score.append((loc,score))
-  
-  recommendation_list = sorted(sim_score, key = lambda x: x[1], reverse=True)[:n_recommend]
+      idx = doc_tags.index(loc)
+      score = doc2vec_model.docvecs.similarity_unseen_docs(doc2vec_model,sentences.words,list(tagged_doc_corpus)[idx].words)
+      sim_score.append((loc,score))
+
+  recommendation_list = sorted(sim_score, key = lambda x: x[1], reverse=True)[:10]
   locations = [loc[0] for loc in recommendation_list]
   similarity_score = [loc[1] for loc in recommendation_list]
   recommendation_df = metadata.loc[metadata['Place Name'].isin(locations)].reset_index(drop=True)
@@ -248,53 +268,121 @@ def get_recommendation(input_text,input_location,vectorizer,lda_model,doc2vec_mo
 
 
 
+
 # STREAMLIT code:
 
-st.markdown("## --------------------------------------------------")
-st.title("\t \t Touristy")
-st.subheader("NLP Based Application for Location Recommendations")
-st.markdown("## --------------------------------------------------")
-st.write("\n")
+# st.markdown("## --------------------------------------------------")
+# st.title("\t \t Touristy")
+# st.subheader("NLP Based Application for Location Recommendations")
+# st.markdown("## --------------------------------------------------")
+# st.write("\n")
 
-discription = st.text_area("Enter the Discription","Type Here...")
+# discription = st.text_area("Enter the Discription","Type Here...")
 
 
-topic, prob_scores, recommendation_df = get_recommendation(discription,input_location,vectorizer,lda_model,model_d2v,10)
+# topic, prob_scores, recommendation_df = get_recommendation(discription,input_location,vectorizer,lda_model,model_d2v,10)
 
-st.markdown("#### Choose the number of Locations")
-slider = st.slider("",1,5)
-st.info("#### NOTE: You can only get 5 locations reommended at a time")
+# st.markdown("#### Choose the number of Locations")
+# slider = st.slider("",1,5)
+# st.info("#### NOTE: You can only get 5 locations reommended at a time")
 
-if st.button("Search"):
-  if not discription:
-    st.warning("Please enter some discription")
-    pass
+# if st.button("Search"):
+#   if not discription:
+#     st.warning("Please enter some discription")
+#     pass
 
-  else:
-    progress_bar = st.progress(0)
-    succes_text = st.empty()
+#   else:
+#     progress_bar = st.progress(0)
+#     succes_text = st.empty()
     
-    count=100/slider
-    num=count
-    for i in range(slider):
+#     count=100/slider
+#     num=count
+#     for i in range(slider):
       
-      resp = requests.get(recommendation_df["img_source"][i])
-      imgg = Image.open(BytesIO(resp.content))
-      st.write("### "+ str(i+1)+". \t"+recommendation_df["Place Name"][i])
-      st.write("( **State:** "+recommendation_df["State"][i]+", **City:** "+recommendation_df["City"][i]+")")
-      link = '[[Click Here]]'+"("+recommendation_df["Link"][i]+")"
-      st.markdown(link)
+#       resp = requests.get(recommendation_df["img_source"][i])
+#       imgg = Image.open(BytesIO(resp.content))
+#       st.write("### "+ str(i+1)+". \t"+recommendation_df["Place Name"][i])
+#       st.write("( **State:** "+recommendation_df["State"][i]+", **City:** "+recommendation_df["City"][i]+")")
+#       link = '[[Click Here]]'+"("+recommendation_df["Link"][i]+")"
+#       st.markdown(link)
       
 
-      st.image(imgg, width=500 , height=150, caption="Dominant Topic: "+str(recommendation_df["dominant_topic"][i])
-        + ", Similarity Score: "+str(recommendation_df["similarity_score"][i])) #" , Probability: "+str(recommendation_df["probability"][i]) + 
+#       st.image(imgg, width=500 , height=150, caption="Dominant Topic: "+str(recommendation_df["dominant_topic"][i])
+#         + ", Similarity Score: "+str(recommendation_df["similarity_score"][i])) #" , Probability: "+str(recommendation_df["probability"][i]) + 
       
-      progress_bar.progress(round(num))
-      num=count+num
+#       progress_bar.progress(round(num))
+#       num=count+num
 
-    succes_text.success("SUCCESS: These are the best locations for you")
+#     succes_text.success("SUCCESS: These are the best locations for you")
 
-    st.balloons()
+#     st.balloons()
+
+#============================================================================================================
+
+def main():
+    
+    # STREAMLIT code:
+    # front end elements of the web page 
+    html_temp = """ 
+    <div style ="background: url(https://i.postimg.cc/ZnHTP71s/aircraft-airplane-boat-1575833.jpg)"  class="page-holder bg-cover"> 
+    <h1 style ="color:white;text-align:center;">TOURISTY</h1>
+    <p style ="color:white;text-align:center;" class="text-white lead mb-5">A Novel Unsupervised NLP based Web application for Similar tourist locations recommendation</p>
+    </header>
+    </div> 
+    """
+
+    # display the front end aspect
+    st.markdown(html_temp, unsafe_allow_html = True)
+    st.markdown("## --------------------------------------------------------------")
+    #st.title("\t \t Touristy")
+    st.markdown("#### \n\n 1. Enter detailed description of a location that you have visited in the past")
+    st.markdown("#### 2. Use the slider to get recommendations as per your need!")
+    st.markdown("## --------------------------------------------------------------")
+    st.write("\n")
+
+    description = st.text_area("Enter the Description","Type Here...")
+
+
+    topic, prob_scores, recommendation_df = get_recommendation(description,vectorizer,lda_model,model_d2v)
+
+    st.markdown("#### Choose the number of Locations")
+    slider = st.slider("",1,5)
+    st.info("#### NOTE: You can only get 5 locations reommended at a time")
+
+    if st.button("Search"):
+      if not description:
+        st.warning("Please enter some discription")
+        pass
+
+      else:
+        progress_bar = st.progress(0)
+        succes_text = st.empty()
+
+        count=100/slider
+        num=count
+        for i in range(slider):
+
+          resp = requests.get(recommendation_df["img_source"][i])
+          imgg = Image.open(BytesIO(resp.content))
+          st.write("### "+ str(i+1)+". \t"+recommendation_df["Place Name"][i])
+          st.write("( **State:** "+recommendation_df["State"][i]+", **City:** "+recommendation_df["City"][i]+")")
+          link = '[[Click Here]]'+"("+recommendation_df["Link"][i]+")"
+          st.markdown(link)
+
+
+          st.image(imgg, width=500 , height=150, caption="Dominant Topic: "+str(recommendation_df["dominant_topic"][i])
+            +" , Similarity Score: "+str(recommendation_df["similarity_score"][i]))
+
+          progress_bar.progress(round(num))
+          num=count+num
+
+        succes_text.success("SUCCESS: These are the best locations for you")
+
+        st.balloons()
+
+
+if __name__ == '__main__':
+    main()
 
 
 
