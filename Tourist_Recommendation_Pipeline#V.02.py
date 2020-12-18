@@ -30,7 +30,7 @@ warnings.filterwarnings("ignore",category=DeprecationWarning)
 # In[2]:
 
 
-metadata = pd.read_csv(r"C:\Users\User\Downloads\Capstone files\Capstone_2\metadata_final.csv", encoding='latin-1')
+metadata = pd.read_csv("metadata_final.csv", encoding='latin-1')
 metadata.head()
 
 
@@ -40,7 +40,7 @@ metadata.head()
 
 
 # Load Doc2Vec Model
-model_d2v = Doc2Vec.load(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_d2v_model.doc2vec')
+model_d2v = Doc2Vec.load('optimal_d2v_model.doc2vec')
 
 
 # In[6]:
@@ -61,15 +61,15 @@ class TaggedDocumentIterator(object):
 
 
 # Load Vectorizer
-with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\tagged_doc_corpus.pkl', 'rb') as f:
+with open('tagged_doc_corpus.pkl', 'rb') as f:
   tagged_doc_corpus = pickle.load(f)
 
 # Load LDA Model
-with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_LDA_Model.pkl', 'rb') as f:
+with open('optimal_LDA_Model.pkl', 'rb') as f:
   lda_model = pickle.load(f)
 
 # Load Vectorizer
-with open(r'C:\Users\User\Downloads\Capstone files\Capstone_2\optimal_vectorizer.pkl', 'rb') as f:
+with open('optimal_vectorizer.pkl', 'rb') as f:
   vectorizer = pickle.load(f)
 
 
@@ -222,25 +222,8 @@ def predict_topic(vectorizer, lda_model, clean_text):
 
 # # **Topic Inference and Recommendation Section**
 
-# In[50]:
-
 
 input_location = 'Cherai Beach'
-# input_text = '''Cherai Beach is a beach located in Cherai in the northern side of Vypin Island, a suburb of the city Kochi in the state of Kerala, India. One of the most visited beaches in the state, it is situated at around 25 km (15 mi) from downtown Kochi and 20 km (12 mi) from Cochin International Airport.
-
-# The beach is around 10 km long and is ideal for swimming as the tide is mostly low and the waves are gentle. It is known for frequent dolphin sightings. It is one of the few places where the backwaters and the sea can be seen in a single frame.[2] Cherai Beach offers the less busier and cleaner option accessible to Kochi and always attract the tourists from around and other states as well.'''
-
-
-# input_text = '''Anamudi is a mountain located in the Indian state of Kerala. It is the highest peak in the Western Ghats and South India, at an elevation of 2,695 metres (8,842 ft)[1][2] and a topographic prominence of 2,479 metres (8,133 ft).[3] It lies on the border of Devikulam Taluk, Idukki district and Kothamangalam Taluk, Ernakulam district.[5] The name Anamudi literally translates to "elephant's head" a reference to the resemblance of the mountain to an elephant's head.[6] Anamudi Shola National Park (ASNP) was declared as National Park in December 2003 as per Notification No. 12876/F2 2003/F & WLD dated 14.12.2003 of Government of Kerala
-
-# The first recorded ascent of Anamudi was by General Douglas Hamilton of the Madras Army on 4 May 1862,[citation needed] but it is likely that there had been earlier ascents by local people.
-
-# Anamudi peak is one of only three ultra prominent peaks in South India. It is also the peak with the greatest topographic isolation within India.[7]It is the highest point in India south of Himalayas. Thus it is known as "Everest of South India'''
-
-# input_location = 'Bhitarkanika Mangroves'
-
-
-# In[139]:
 
 
 def get_recommendation(input_text,vectorizer,lda_model,doc2vec_model):
