@@ -254,54 +254,6 @@ def get_recommendation(input_text,vectorizer,lda_model,doc2vec_model):
 
 # STREAMLIT code:
 
-# st.markdown("## --------------------------------------------------")
-# st.title("\t \t Touristy")
-# st.subheader("NLP Based Application for Location Recommendations")
-# st.markdown("## --------------------------------------------------")
-# st.write("\n")
-
-# discription = st.text_area("Enter the Discription","Type Here...")
-
-
-# topic, prob_scores, recommendation_df = get_recommendation(discription,input_location,vectorizer,lda_model,model_d2v,10)
-
-# st.markdown("#### Choose the number of Locations")
-# slider = st.slider("",1,5)
-# st.info("#### NOTE: You can only get 5 locations reommended at a time")
-
-# if st.button("Search"):
-#   if not discription:
-#     st.warning("Please enter some discription")
-#     pass
-
-#   else:
-#     progress_bar = st.progress(0)
-#     succes_text = st.empty()
-    
-#     count=100/slider
-#     num=count
-#     for i in range(slider):
-      
-#       resp = requests.get(recommendation_df["img_source"][i])
-#       imgg = Image.open(BytesIO(resp.content))
-#       st.write("### "+ str(i+1)+". \t"+recommendation_df["Place Name"][i])
-#       st.write("( **State:** "+recommendation_df["State"][i]+", **City:** "+recommendation_df["City"][i]+")")
-#       link = '[[Click Here]]'+"("+recommendation_df["Link"][i]+")"
-#       st.markdown(link)
-      
-
-#       st.image(imgg, width=500 , height=150, caption="Dominant Topic: "+str(recommendation_df["dominant_topic"][i])
-#         + ", Similarity Score: "+str(recommendation_df["similarity_score"][i])) #" , Probability: "+str(recommendation_df["probability"][i]) + 
-      
-#       progress_bar.progress(round(num))
-#       num=count+num
-
-#     succes_text.success("SUCCESS: These are the best locations for you")
-
-#     st.balloons()
-
-#============================================================================================================
-
 def main():
     
     # STREAMLIT code:
@@ -318,7 +270,7 @@ def main():
     st.markdown(html_temp, unsafe_allow_html = True)
     st.markdown("## --------------------------------------------------------------")
     #st.title("\t \t Touristy")
-    st.markdown("#### \n\n 1. Enter detailed description of a location that you have visited in the past")
+    st.markdown("#### 1. Enter detailed description of a location that you have visited in the past")
     st.markdown("#### 2. Use the slider to get recommendations as per your need!")
     st.markdown("## --------------------------------------------------------------")
     st.write("\n")
